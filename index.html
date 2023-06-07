@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Form</title>
+    <style>
+        header {
+            background-color: #f2f2f2;
+            padding: 10px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        header img {
+            width: 50px;
+            height: 50px;
+            margin-top: 10px;
+        }
+
+        #searchResults {
+            padding: 10px;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <header>
+        <img src="path/to/your/logo.png" alt="Logo">
+        <h1>Search Engine</h1>
+    </header>
+
+    <div id="searchContainer">
+        <form onsubmit="performSearch(event)">
+            <input type="text" id="searchInput" placeholder="Search" />
+            <input type="submit" value="Go" />
+        </form>
+    </div>
+
+    <div id="searchResults"></div>
+
+    <div id="lastSearchContainer">
+        <h3>Last Search:</h3>
+        <p id="lastSearch"></p>
+    </div>
+
+    <script>
+        function performSearch(event) {
+            event.preventDefault();
+            var userInput = document.getElementById("searchInput").value;
+            searchQuestion(userInput);
+        }
+
+        function searchQuestion(question) {
+            var searchContainer = document.getElementById("searchResults");
+            searchContainer.innerHTML = ""; // Clear previous results
+
+            var apiKey = "AIzaSyCFmjwjVqCp2YkztNQh7c3pD_7fK5HwYpk";
+            var cx = "YOUR_CX";
+            var url = "https://www.googleapis.com/customsearch/v1?key=" + apiKey + "&cx=" + cx + "&q=" + encodeURIComponent(question);
+
+            $.ajax({
+                url: url,
+                dataType: "json",
+                success: function(data) {
+                    displaySearchResults(data);
+                },
+                error: function(error) {
+                    console.log("Error fetching search results: ", error);
+                }
+            });
+        }
+
+        function displaySearchResults(data) {
+            var searchContainer = document.getElementById("searchResults");
+            var items = data.items;
+
+            if (items && items.length > 0) {
+                items.forEach(item => {
+                    var title = item.title;
+                    var link = item.link;
+
+                    var result = document.createElement("p");
+                    var resultLink = document.createElement("a");
+                    resultLink.href = link;
+                    resultLink.textContent = title;
+
+                    result.appendChild(resultLink);
+                    searchContainer.appendChild(result);
+                });
+            } else {
+                var noResults = document.createElement("p");
+                noResults.textContent = "No results found.";
+                searchContainer.appendChild(noResults);
+            }
+        }
+    </script>
+</body>
+</html>
+
